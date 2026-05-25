@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vela 产品简介与定义 | AI健身Agent与智能硬件</title>
+  <style>
+    :root {
+      --orange: #e85a2b;
+      --orange-2: #ff7a45;
+      --black: #050505;
+      --black-2: #141414;
+      --paper: #f7f5ef;
+      --paper-2: #fffaf4;
+      --white: #ffffff;
+      --muted: #686868;
+      --line: rgba(5, 5, 5, 0.12);
+      --line-dark: rgba(255, 255, 255, 0.14);
+      --blue: #246bfe;
+      --green: #16a085;
+      --yellow: #f2c94c;
+      --red: #db3a34;
+      --radius: 8px;
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--paper);
+    }
+
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--black);
+      background:
+        linear-gradient(90deg, rgba(5, 5, 5, 0.035) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(5, 5, 5, 0.035) 1px, transparent 1px),
+        var(--paper);
+      background-size: 28px 28px;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 292px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 22px;
+      color: var(--white);
+      background: var(--black);
+      overflow-y: auto;
+      border-right: 4px solid var(--orange);
+    }
+
+    .brand {
+      margin-bottom: 28px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line-dark);
+    }
+
+    .brand-logo {
+      font-size: 25px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .brand-logo span {
+      color: var(--orange-2);
+    }
+
+    .brand-sub {
+      margin-top: 12px;
+      color: rgba(255, 255, 255, 0.58);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .nav-title {
+      margin: 24px 0 10px;
+      color: rgba(255, 255, 255, 0.42);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .nav a {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 10px 8px;
+      border-radius: var(--radius);
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 13px;
+      line-height: 1.35;
+      transition: background 180ms ease, color 180ms ease;
+    }
+
+    .nav a:hover {
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .nav code {
+      color: var(--orange-2);
+      font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+      font-size: 11px;
+    }
+
+    .main {
+      min-width: 0;
+    }
+
+    .hero {
+      padding: 56px clamp(26px, 5vw, 72px) 42px;
+      background:
+        linear-gradient(120deg, rgba(232, 90, 43, 0.15), transparent 34%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(247, 245, 239, 0.92));
+      border-bottom: 1px solid var(--line);
+    }
+
+    .doc-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 11px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.72);
+      font-size: 12px;
+      font-weight: 800;
+      color: rgba(5, 5, 5, 0.72);
+    }
+
+    .pill.orange {
+      color: var(--white);
+      border-color: var(--orange);
+      background: var(--orange);
+    }
+
+    h1 {
+      max-width: 1120px;
+      margin: 0;
+      font-size: clamp(34px, 4.35vw, 58px);
+      line-height: 1.05;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .hero-lead {
+      max-width: 1000px;
+      margin: 24px 0 0;
+      color: rgba(5, 5, 5, 0.72);
+      font-size: clamp(17px, 1.7vw, 22px);
+      line-height: 1.65;
+    }
+
+    .decision-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 34px;
+    }
+
+    .decision {
+      min-height: 126px;
+      padding: 18px;
+      border-radius: var(--radius);
+      background: var(--black);
+      color: var(--white);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .decision::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      height: 4px;
+      background: var(--orange);
+    }
+
+    .decision b {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--orange-2);
+      font-size: 13px;
+    }
+
+    .decision span {
+      display: block;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 14px;
+      line-height: 1.52;
+    }
+
+    section {
+      padding: 58px clamp(26px, 5vw, 72px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+      margin-bottom: 28px;
+    }
+
+    .num {
+      color: var(--orange);
+      font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: 1.05;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .section-lead {
+      max-width: 980px;
+      margin: 16px 0 0;
+      color: rgba(5, 5, 5, 0.68);
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      padding: 20px;
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.035);
+    }
+
+    .card.dark {
+      color: var(--white);
+      background: var(--black);
+      border-color: var(--black);
+    }
+
+    .card.orange {
+      color: var(--white);
+      background: var(--orange);
+      border-color: var(--orange);
+    }
+
+    .card h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .card p,
+    .card li {
+      color: rgba(5, 5, 5, 0.68);
+      font-size: 14px;
+      line-height: 1.62;
+    }
+
+    .card.dark p,
+    .card.dark li,
+    .card.orange p,
+    .card.orange li {
+      color: rgba(255, 255, 255, 0.78);
+    }
+
+    .card p {
+      margin: 0;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    li + li {
+      margin-top: 7px;
+    }
+
+    .metric {
+      min-height: 144px;
+      padding: 18px;
+      border-radius: var(--radius);
+      color: var(--white);
+      background: var(--black);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric:nth-child(2n) {
+      background: var(--orange);
+    }
+
+    .metric:nth-child(3n) {
+      background: var(--blue);
+    }
+
+    .metric:nth-child(4n) {
+      background: var(--green);
+    }
+
+    .metric b {
+      display: block;
+      font-size: clamp(28px, 3.6vw, 48px);
+      line-height: 1;
+      margin-bottom: 12px;
+      white-space: nowrap;
+    }
+
+    .metric span {
+      display: block;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 13px;
+      line-height: 1.42;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.035);
+      font-size: 13px;
+    }
+
+    th,
+    td {
+      padding: 13px 12px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid rgba(5, 5, 5, 0.09);
+      line-height: 1.5;
+    }
+
+    th {
+      color: var(--white);
+      background: var(--black);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    td strong {
+      color: var(--black);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 8px;
+      border-radius: 999px;
+      color: var(--white);
+      background: var(--black);
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .tag.high {
+      background: var(--red);
+    }
+
+    .tag.mid {
+      background: var(--orange);
+    }
+
+    .tag.low {
+      background: var(--green);
+    }
+
+    .quote {
+      padding: 22px 24px;
+      border-left: 5px solid var(--orange);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      background: var(--black);
+      color: var(--white);
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.45;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .flow-step {
+      min-height: 126px;
+      padding: 15px;
+      border-radius: var(--radius);
+      color: var(--white);
+      background: var(--black);
+      position: relative;
+    }
+
+    .flow-step:nth-child(even) {
+      background: var(--orange);
+    }
+
+    .flow-step b {
+      display: block;
+      margin-bottom: 22px;
+      font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      opacity: 0.72;
+    }
+
+    .flow-step span {
+      display: block;
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .diagram {
+      min-height: 360px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(135deg, rgba(232, 90, 43, 0.95), rgba(232, 90, 43, 0.62)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.22) 0 1px, transparent 1px 24px);
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .diagram::after {
+      content: attr(data-label);
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: 20px;
+      padding: 14px;
+      border-radius: var(--radius);
+      color: rgba(5, 5, 5, 0.72);
+      background: rgba(255, 255, 255, 0.8);
+      font-size: 13px;
+      line-height: 1.45;
+      word-break: break-all;
+      backdrop-filter: blur(18px);
+    }
+
+    .wrap-band {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 74%;
+      height: 112px;
+      transform: translate(-50%, -50%) rotate(-5deg);
+      border-radius: 999px;
+      background: linear-gradient(90deg, #111 0 18%, #f4f0e8 18% 25%, #111 25% 100%);
+      box-shadow: 0 28px 80px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.2);
+    }
+
+    .dots {
+      position: absolute;
+      inset: 18px 54px;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 10px;
+    }
+
+    .dots i {
+      display: block;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .dots i:nth-child(3n) {
+      background: rgba(232, 90, 43, 0.92);
+    }
+
+    .dots i:nth-child(4n) {
+      background: rgba(242, 201, 76, 0.92);
+    }
+
+    .source-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .source {
+      padding: 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.82);
+      font-size: 12px;
+      line-height: 1.45;
+      word-break: break-all;
+    }
+
+    .source b {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--orange);
+      font-size: 13px;
+    }
+
+    .footer {
+      padding: 34px clamp(26px, 5vw, 72px);
+      color: rgba(255, 255, 255, 0.7);
+      background: var(--black);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .mt {
+      margin-top: 18px;
+    }
+
+    .mt-lg {
+      margin-top: 28px;
+    }
+
+    @media (max-width: 1120px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: relative;
+        height: auto;
+        border-right: 0;
+        border-bottom: 4px solid var(--orange);
+      }
+
+      .nav {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 4px;
+      }
+
+      .decision-strip,
+      .grid-4,
+      .source-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid-3,
+      .flow {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .nav,
+      .decision-strip,
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .flow,
+      .source-list,
+      .section-head {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 42px;
+      }
+
+      section,
+      .hero {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">Vela <span>Product</span></div>
+        <div class="brand-sub">AI健身Agent / Sensor Wrap 产品定义<br>面向：产品、战略、硬件与算法团队</div>
+      </div>
+
+      <div class="nav-title">目录</div>
+      <nav class="nav" aria-label="产品文档目录">
+        <a href="#exec"><code>00</code><span>执行结论</span></a>
+        <a href="#market"><code>01</code><span>市场总盘与增速</span></a>
+        <a href="#users"><code>02</code><span>用户画像与痛点</span></a>
+        <a href="#competitors"><code>03</code><span>竞品格局与空白</span></a>
+        <a href="#failures"><code>04</code><span>失败案例教训</span></a>
+        <a href="#philosophy"><code>05</code><span>产品哲学</span></a>
+        <a href="#definition"><code>06</code><span>产品定义</span></a>
+        <a href="#agent"><code>07</code><span>Agent边界</span></a>
+        <a href="#logic"><code>08</code><span>运行逻辑</span></a>
+        <a href="#hardware"><code>09</code><span>硬件形态</span></a>
+        <a href="#tech"><code>10</code><span>技术与材料选型</span></a>
+        <a href="#algorithm"><code>11</code><span>算法边界</span></a>
+        <a href="#roadmap"><code>12</code><span>路线图与阶段定义</span></a>
+        <a href="#sources"><code>13</code><span>本地资料</span></a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="hero">
+        <div class="doc-meta">
+          <span class="pill orange">产品简介与定义</span>
+          <span class="pill">Research_Final + Product Definition V0.3 + Hardware Wrap Context</span>
+          <span class="pill">2026-05-25</span>
+          <span class="pill">产品定义草案</span>
+        </div>
+        <h1>Vela：从主动决策系统到智能硬件。</h1>
+        <p class="hero-lead">Vela 的产品定义是一个 AI 健身 Agent：以训练决策为本体，先通过 Web App 与 Agent 本体跑通训练日闭环，再通过 Sensor Wrap、Band 与视觉系统逐步获得更高质量的训练现场和身体状态数据。</p>
+
+        <div class="decision-strip">
+          <div class="decision"><b>战略判断</b><span>机会不在“更多健康数据”，而在把数据转成下一步训练动作。</span></div>
+          <div class="decision"><b>阶段一判断</b><span>先用 Web App + Agent 本体跑通 Push Day / 卧推组间调参闭环。</span></div>
+          <div class="decision"><b>硬件判断</b><span>硬件不是本体，是给 Agent 提供更高质量现场数据的入口。</span></div>
+          <div class="decision"><b>边界判断</b><span>不做伪精确，不承诺精准测重量、绝对功率或完整动作纠错。</span></div>
+        </div>
+      </header>
+
+      <section id="exec">
+        <div class="section-head">
+          <div class="num">00</div>
+          <div>
+            <h2>执行结论：先给产品判断。</h2>
+            <p class="section-lead">Research 给出的市场机会是 AI健身、数字健身、可穿戴AI 的高增速；Product Definition 给出的产品答案是“主动训练决策系统”；Hardware Wrap Context 给出的硬件原则是“服务组间调参，不单独卖数据”。</p>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="card dark">
+            <h3>一句话产品定义</h3>
+            <p>Vela 是一个 AI 健身 Agent：基于用户的生理数据、训练数据和实时训练质量，主动判断今天怎么练、这一组练得怎么样、下一组怎么调。</p>
+          </div>
+          <div class="card orange">
+            <h3>一级产品本体</h3>
+            <p>不是腕带、手表、耳机、摄像头、体脂秤或训练记录 App，而是主动训练决策系统。硬件只是数据入口或体验增强器。</p>
+          </div>
+          <div class="card">
+            <h3>首个验证闭环</h3>
+            <p>Web App MVP 聚焦中阶健身房用户，以 Push Day / 卧推为 Demo 主线，验证训练前协商、组后反馈、组间调参、训练复盘和下次计划更新。</p>
+          </div>
+        </div>
+
+        <div class="quote mt-lg">核心产品判断：Vela 不以“健康穿戴”作为第一性定义，而以“训练决策”作为第一性定义。产品价值不是展示更多数据，而是把数据转化为今天怎么练、这一组练得怎么样、下一组怎么调。</div>
+      </section>
+
+      <section id="market">
+        <div class="section-head">
+          <div class="num">01</div>
+          <div>
+            <h2>市场总盘：钱在向智能化一端流动。</h2>
+            <p class="section-lead">传统健身器械和俱乐部仍有体量，但增长更快的是数字健身、AI健身和可穿戴AI。Vela 的切入点不应是硬件单品，而是“运动场景中的智能决策层”。</p>
+          </div>
+        </div>
+
+        <div class="grid-4">
+          <div class="metric"><b>$122-134B</b><span>全球健身市场 2025，统计范围包含俱乐部、器械与数字健身。</span></div>
+          <div class="metric"><b>$10.68B</b><span>全球 AI 健身与健康市场 2025，CAGR 19.3%。</span></div>
+          <div class="metric"><b>$52.65B</b><span>全球可穿戴 AI 市场 2025，CAGR 31.1%。</span></div>
+          <div class="metric"><b>6.115亿</b><span>全球可穿戴设备 2025 出货量，YoY +9.1%。</span></div>
+        </div>
+
+        <table class="mt-lg">
+          <thead>
+            <tr><th>市场层级</th><th>关键数据</th><th>对 Vela 的含义</th><th>判断</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>全球健身市场</td><td>$122-134B，俱乐部市场预测 2035 达 $295-330B。</td><td>健身需求确定存在，但不能靠传统健身叙事突围。</td><td><span class="tag mid">大池子</span></td></tr>
+            <tr><td>数字/虚拟健身</td><td>2025 约 $34-35B，CAGR 27-28%。</td><td>用户接受线上训练服务，但需要更强个性化和可操作性。</td><td><span class="tag high">高增速</span></td></tr>
+            <tr><td>AI健身</td><td>2025 约 $10.7B，CAGR 19.3%。</td><td>AI 是明确增量方向，但要避免泛化建议。</td><td><span class="tag high">关键赛道</span></td></tr>
+            <tr><td>中国健身市场</td><td>2025 约 6,600 亿元；付费会员 8,451.8 万。</td><td>中国付费会员基数大，私教消费为 AI Coach 提供价格锚点。</td><td><span class="tag mid">可验证</span></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="users">
+        <div class="section-head">
+          <div class="num">02</div>
+          <div>
+            <h2>用户画像与痛点：他们不是缺数据，是缺行动。</h2>
+            <p class="section-lead">Research 反复指向同一个问题：可穿戴和健身 App 已经能记录很多数据，但用户真正愿意付费的是“今天怎么练、下一组怎么调、怎么避免受伤”。</p>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <h3>A. 数据驱动运动增强</h3>
+            <p>25-45 岁，男性偏多，中高收入，3年以上运动习惯。需要高精度数据、训练负荷分析和恢复建议，适合成为 Vela Pro / Wrap 的早期种子用户。</p>
+          </div>
+          <div class="card">
+            <h3>B. 康复 / 疾病预防</h3>
+            <p>对健康数据敏感，但功能复杂时高流失。不是 MVP 主战场，可作为未来 Band 与健康托底线延展。</p>
+          </div>
+          <div class="card">
+            <h3>C. 体态 / 体型塑造</h3>
+            <p>18-35 岁，新手更多，目标是减脂、增肌、体态改善。需要低门槛计划和持续反馈，但训练决策深度较低。</p>
+          </div>
+        </div>
+
+        <table class="mt-lg">
+          <thead>
+            <tr><th>弃用原因</th><th>典型反馈</th><th>本质问题</th><th>Vela 应对</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>“So what?”问题</td><td>Whoop 告诉我恢复率 34%，那我今天要不要去健身房？</td><td>数据没有转成训练动作。</td><td>输出下一组 / 今日策略，而不是单独展示分数。</td></tr>
+            <tr><td>订阅价值不匹配</td><td>第一年后 $30/月，Apple Watch 免费能做 80%。</td><td>续费节点价值不可感知。</td><td>6个月内让用户看到训练表现或伤病风险管理收益。</td></tr>
+            <tr><td>佩戴摩擦</td><td>$500 买的 Athos，洗4次后就不穿了。</td><td>硬件日常维护成本过高。</td><td>App 先行；硬件必须低摩擦，Wrap 只在训练时使用。</td></tr>
+            <tr><td>数据信任崩塌</td><td>它说我睡了8小时，我其实2点才睡。</td><td>一次错误会毁掉长期信任。</td><td>前台表达保守，避免伪精确；保留用户修正权。</td></tr>
+            <tr><td>健康焦虑</td><td>为了睡眠分数反而睡不好。</td><td>指标设计会反噬用户。</td><td>不做焦虑化健康报告，包装为训练质量和下一步建议。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="competitors">
+        <div class="section-head">
+          <div class="num">03</div>
+          <div>
+            <h2>竞品格局：每类产品都缺一块。</h2>
+            <p class="section-lead">Whoop / Oura 有传感器和订阅，但缺主动训练指导；Garmin / Apple 有生态，但健身深度或 AI 深度不足；Future 解决了行动建议但不能规模化；Vi 证明了“耳机+AI健身”不能只靠语音聊天。</p>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr><th>竞品</th><th>形态</th><th>AI深度</th><th>数据精度</th><th>关键缺陷</th><th>Vela 机会</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Whoop</strong></td><td>无屏腕带 + 订阅</td><td>中</td><td>高，HRV/恢复强</td><td>建议泛化，续费流失，“So what?”</td><td>把恢复分数转成今日训练策略。</td></tr>
+            <tr><td><strong>Oura</strong></td><td>智能戒指</td><td>中</td><td>睡眠强，运动弱</td><td>无主动交互，传感器形态受限</td><td>训练中实时交互和组间调参。</td></tr>
+            <tr><td><strong>Garmin</strong></td><td>GPS运动手表</td><td>低，规则引擎</td><td>最高</td><td>AI教练薄弱，无订阅深度服务</td><td>专业训练决策层，而不是追踪层。</td></tr>
+            <tr><td><strong>Apple Watch</strong></td><td>智能手表 + Fitness+</td><td>低到中，Workout Buddy</td><td>中</td><td>全能定位导致健身深度不足</td><td>聚焦中阶健身房力量训练。</td></tr>
+            <tr><td><strong>Future</strong></td><td>软件 + 真人教练</td><td>高</td><td>依赖 Apple Watch</td><td>真人成本无法规模化，价格高</td><td>用规则+LLM+Memory 替代部分真人教练决策。</td></tr>
+            <tr><td><strong>Vi</strong></td><td>AI健身教练耳机</td><td>差</td><td>低</td><td>运动中语音AI不成熟</td><td>先收窄场景，不做全能语音助手。</td></tr>
+          </tbody>
+        </table>
+
+        <div class="quote mt-lg">结构性空白：轻量穿戴 / 训练现场数据 + 真 AI Agent + 可操作每日指令 + 组间动态调参。</div>
+      </section>
+
+      <section id="failures">
+        <div class="section-head">
+          <div class="num">04</div>
+          <div>
+            <h2>失败案例：Vela 要主动避开的坑。</h2>
+            <p class="section-lead">失败不是“市场不存在”，而是产品把精度、硬件、内容、AI 或语音能力放错了位置。Vela 的风险控制必须从定义阶段就写进边界。</p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>Athos 智能运动服</h3>
+            <ul>
+              <li>EMG 传感器编织进压缩衣裤，套装约 $500。</li>
+              <li>失败原因：清洗/充电/穿戴摩擦、数据解读门槛、硬件成本。</li>
+              <li><strong>教训：</strong>精度不等于用户价值；硬件摩擦会杀死训练习惯。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Mirror / Lululemon Studio</h3>
+            <ul>
+              <li>2020 年 $5 亿收购，2023 年官方停产。</li>
+              <li>失败原因：COVID 红利消退、高价硬件、内容护城河不足。</li>
+              <li><strong>教训：</strong>不要依赖居家健身叙事，聚焦训练表现提升。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Halo Sport 神经刺激耳机</h3>
+            <ul>
+              <li>tDCS 经颅电刺激耳机，消费市场教育成本极高。</li>
+              <li>失败原因：科学证据争议、监管模糊、效果不可感知。</li>
+              <li><strong>教训：</strong>消费级生物技术必须可解释、可感知、可信。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Vi AI健身耳机</h3>
+            <ul>
+              <li>与 Shokz 形态最接近的失败先例。</li>
+              <li>失败原因：语音 AI 体验不足，运动中实时需求变化太复杂。</li>
+              <li><strong>教训：</strong>不能只做“加了AI的耳机”，必须有窄场景闭环。</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="philosophy">
+        <div class="section-head">
+          <div class="num">05</div>
+          <div>
+            <h2>产品哲学：主动指导，而不是被动监测。</h2>
+            <p class="section-lead">Vela 的长期价值不是让用户每次训练都“爽”，而是稳定进步、少受伤、少瞎练。产品必须克制：正常时不打扰，异常时才介入。</p>
+          </div>
+        </div>
+
+        <div class="grid-4">
+          <div class="card dark"><h3>主动指导是核心</h3><p>睡眠、HRV、体脂、体重、恢复状态，不是为了健康大屏，而是为了训练决策。</p></div>
+          <div class="card"><h3>稳定进步 + 少受伤</h3><p>从增肌、塑形、减脂、增力诉求进入，长期留存靠更科学训练。</p></div>
+          <div class="card orange"><h3>正常时隐身</h3><p>按计划完成时不弹建议卡、不解释、不打扰，直接进入下一组。</p></div>
+          <div class="card"><h3>异常时介入</h3><p>连续粘滞、失败、疼痛、被压、动作变形时，明确调整或反对高风险行为。</p></div>
+        </div>
+      </section>
+
+      <section id="definition">
+        <div class="section-head">
+          <div class="num">06</div>
+          <div>
+            <h2>产品定义：Vela 的本体不是硬件。</h2>
+            <p class="section-lead">硬件、传感器、第三方健康数据、体测报告、摄像头、腕带、Wrap / Sensor，都是主动训练决策系统的数据入口或体验增强器。</p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card dark">
+            <h3>Vela 不是什么</h3>
+            <ul>
+              <li>不是健康数据 App。</li>
+              <li>不是训练记录 App。</li>
+              <li>不是动作百科 App。</li>
+              <li>不是先从腕带、手表、手套或摄像头定义产品。</li>
+              <li>不是全能健康管理、医疗诊断或营养记录平台。</li>
+            </ul>
+          </div>
+          <div class="card orange">
+            <h3>Vela 是什么</h3>
+            <ul>
+              <li>一个主动训练决策系统。</li>
+              <li>一个能回答“今天怎么练、这一组怎样、下一组怎么调”的 AI 健身 Agent。</li>
+              <li>一个以 Web App 先跑通训练闭环，再接入硬件增强的产品路线。</li>
+              <li>一个规则系统做底座、LLM 做交互层的智能副驾。</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="agent">
+        <div class="section-head">
+          <div class="num">07</div>
+          <div>
+            <h2>Agent 边界：用户主导，Vela 建议。</h2>
+            <p class="section-lead">Vela 是辅助型智能体，不是训练控制器。安全和关键调参不能交给 LLM 自由发挥，必须由规则系统兜底。</p>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr><th>用户决定</th><th>Vela 负责</th><th>LLM 负责</th><th>规则系统负责</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>是否开始训练、执行计划、修改动作、接受建议、结束动作、结束训练。</td>
+              <td>生成默认计划、组间调参建议、识别风险、提供替代方案、记录训练变化。</td>
+              <td>解释原因、协商改写、回答追问、温柔但专业地说“不建议”。</td>
+              <td>重量、次数、间歇、组数、风险触发、是否结束动作、是否修改计划。</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="grid-3 mt-lg">
+          <div class="card"><h3>可建议</h3><p>根据历史工作组、当天状态、组后反馈，建议保持、加 reps、小幅加重、延长休息、替换动作。</p></div>
+          <div class="card"><h3>可反对</h3><p>疼痛、被压、明显动作变形或高风险坚持冲重量时，Vela 应明确反对当前动作策略。</p></div>
+          <div class="card"><h3>不可越界</h3><p>不做医疗诊断、不做激素/药物建议、不伪装绝对测力设备、不用 LLM 自由决定安全动作。</p></div>
+        </div>
+      </section>
+
+      <section id="logic">
+        <div class="section-head">
+          <div class="num">08</div>
+          <div>
+            <h2>运行逻辑：训练日闭环，而不是聊天机器人。</h2>
+            <p class="section-lead">MVP 的核心 Demo 固定为 Push Day / 卧推主项。目标不是做完整平台，而是证明轻量反馈可以驱动可信调参。</p>
+          </div>
+        </div>
+
+        <div class="flow">
+          <div class="flow-step"><b>01</b><span>首页：今日建议与计划入口</span></div>
+          <div class="flow-step"><b>02</b><span>训练前协商：状态 / 时间 / 不适</span></div>
+          <div class="flow-step"><b>03</b><span>今日计划：稳 / 冲 / 保策略</span></div>
+          <div class="flow-step"><b>04</b><span>动作执行：当前组聚焦</span></div>
+          <div class="flow-step"><b>05</b><span>组后反馈：过轻 / 轻松 / 正常 / 粘滞 / 失败</span></div>
+          <div class="flow-step"><b>06</b><span>复盘：结论先行，更新下次草稿</span></div>
+        </div>
+
+        <table class="mt-lg">
+          <thead>
+            <tr><th>体感状态</th><th>前台含义</th><th>调参策略</th><th>是否打扰</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>过轻</td><td>计划明显低估强度</td><td>立即提高训练刺激，可加 reps 或小幅加重</td><td><span class="tag high">立即介入</span></td></tr>
+            <tr><td>轻松</td><td>有余力，但不确定是否稳定</td><td>先观察，连续两组轻松再调整</td><td><span class="tag mid">观察</span></td></tr>
+            <tr><td>正常</td><td>计划匹配</td><td>继续原计划</td><td><span class="tag low">不打扰</span></td></tr>
+            <tr><td>粘滞</td><td>完成了，但最后几次明显卡住</td><td>先观察，连续两组后保守调整</td><td><span class="tag mid">观察</span></td></tr>
+            <tr><td>失败</td><td>未完成或出现安全事件</td><td>确认失败类型，降 reps / 降重量 / 停止动作 / 替代动作</td><td><span class="tag high">立即介入</span></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="hardware">
+        <div class="section-head">
+          <div class="num">09</div>
+          <div>
+            <h2>硬件形态：App 是主线，Wrap 是增强入口。</h2>
+            <p class="section-lead">当前硬件探索重点是 Vela Wrap / Sensor Wrap：可卷绕训练器械传感带，把普通杠铃、哑铃和器械把手临时变成可感知的训练接触界面。</p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="diagram" data-label="占位图路径：D:\Shokz\Vela\assets\internal\vela-wrap-hardware-form.png">
+            <div class="wrap-band"><div class="dots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+          </div>
+          <div class="card">
+            <h3>一句话硬件定义</h3>
+            <p>Vela Wrap 是一条可卷绕训练器械传感带，包裹在杠铃、哑铃或器械把手上，通过压力阵列和 IMU 捕捉接触压力、左右压力差、动作节奏和速度趋势，为 Vela Agent 的组间调参提供更高质量现场数据。</p>
+            <h3 class="mt">不应承诺</h3>
+            <ul>
+              <li>精准测真实重量。</li>
+              <li>精准测绝对功率。</li>
+              <li>完整动作纠错。</li>
+              <li>判断所有器械动作质量。</li>
+              <li>替代摄像头、测力台或专业 VBT 设备。</li>
+            </ul>
+          </div>
+        </div>
+
+        <table class="mt-lg">
+          <thead>
+            <tr><th>硬件方向</th><th>优势</th><th>问题</th><th>当前判断</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>腕带 / 手环</td><td>全天候心率、HRV、睡眠、提醒、小屏确认。</td><td>容易落入 Whoop / Apple / Garmin 竞争。</td><td>V2 身体状态入口，不是本体。</td></tr>
+            <tr><td>手套 + 压力传感</td><td>上肢动作压力数据强。</td><td>清洗、佩戴、下肢兼容性差。</td><td>风险高，暂不主推。</td></tr>
+            <tr><td>手机摄像头 / 视觉</td><td>适合动作姿态和辅助判断。</td><td>架手机、隐私、拍到他人、健身房摩擦。</td><td>未来增强，不做 MVP 主链路。</td></tr>
+            <tr><td>Sensor Wrap</td><td>训练时使用，包裹器械，场景聚焦。</td><td>固定、滑移、汗液、杆径适配、读数一致性。</td><td>当前重点探索方向。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="tech">
+        <div class="section-head">
+          <div class="num">10</div>
+          <div>
+            <h2>技术与材料选型：先追求可靠趋势，不追求实验室精度。</h2>
+            <p class="section-lead">Wrap 的技术路线应围绕“可解释的相对变化”设计：压力阵列看接触质量和左右趋势，IMU 看 reps、节奏和速度趋势，App / Agent 把这些转成调参建议。</p>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <h3>传感器组合</h3>
+            <ul>
+              <li>柔性压力传感阵列 / 多点 FSR。</li>
+              <li>IMU：加速度计 + 陀螺仪，磁力计可选。</li>
+              <li>蓝牙通信，小型电池，训练中低延迟连接。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>材料方向</h3>
+            <ul>
+              <li>外层：耐磨防汗 TPU / 硅胶包覆。</li>
+              <li>接触层：高摩擦防滑纹理，适配滚花和器械把手。</li>
+              <li>结构：魔术贴 / 磁吸 / 卡扣 / 弹性卷绕待验证。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>工程难点</h3>
+            <ul>
+              <li>不同杆径适配。</li>
+              <li>压力传感器滑移。</li>
+              <li>汗液、摩擦、滚花磨损。</li>
+              <li>每次绑的位置一致性。</li>
+            </ul>
+          </div>
+        </div>
+
+        <table class="mt-lg">
+          <thead>
+            <tr><th>模块</th><th>可做什么</th><th>不能说什么</th><th>前台表达</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>FSR 压力阵列</td><td>接触压力、左右压力差、压力稳定性、压力峰值变化。</td><td>精准测左右肌力、精准判断哪边肌肉发力不足。</td><td>“左右接触压力是否均衡”“接触稳定性是否下降”。</td></tr>
+            <tr><td>IMU</td><td>reps、节奏、离心/向心阶段、速度趋势、速度衰减。</td><td>没有已知负重时直接测功率。</td><td>“最后几次推起速度下降明显”。</td></tr>
+            <tr><td>App 已知负重</td><td>结合 IMU 做相对功率趋势估算。</td><td>绝对功率精准测量。</td><td>“这组相对输出趋势下降，不建议加重”。</td></tr>
+            <tr><td>Confidence Score</td><td>判断本组数据是否可用于调参。</td><td>隐藏不确定性。</td><td>低置信度时退回用户体感反馈。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="algorithm">
+        <div class="section-head">
+          <div class="num">11</div>
+          <div>
+            <h2>算法边界：安全、调参和伪精确是三条红线。</h2>
+            <p class="section-lead">算法系统必须把“可测、可推断、不可承诺”分开。Agent 对用户说的是训练建议，不是传感器炫技，也不是医学结论。</p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card dark">
+            <h3>可进入 Agent 后台的字段</h3>
+            <ul>
+              <li>left_pressure_avg / right_pressure_avg</li>
+              <li>pressure_asymmetry / pressure_stability</li>
+              <li>peak_pressure_delta / contact_shift</li>
+              <li>rep_count / rep_tempo</li>
+              <li>eccentric_tempo / concentric_tempo</li>
+              <li>concentric_velocity_trend / velocity_loss_percent</li>
+              <li>confidence_score</li>
+            </ul>
+          </div>
+          <div class="card orange">
+            <h3>前台应该如何翻译</h3>
+            <p>不要说“你右胸发力弱”。应该说：“这组右侧压力波动更大，最后两次推起速度下降明显。下一组不建议加重，先保持重量，把左右稳定性做稳。”</p>
+          </div>
+        </div>
+
+        <table class="mt-lg">
+          <thead>
+            <tr><th>算法层</th><th>职责</th><th>边界</th><th>失败兜底</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>规则引擎</td><td>决定重量、次数、休息、风险触发和动作是否继续。</td><td>必须可审计，不交给 LLM 自由发挥。</td><td>风险高时保守调整。</td></tr>
+            <tr><td>LLM 交互层</td><td>解释原因、处理用户追问、协商改写计划。</td><td>不能单独决定安全和关键训练变量。</td><td>调用规则建议，不确定时请求确认。</td></tr>
+            <tr><td>ShortTermMemory</td><td>记录当前训练中的连续轻松、连续粘滞、失败、替换和休息延长。</td><td>仅服务当前训练。</td><td>丢失时回到本组记录和用户确认。</td></tr>
+            <tr><td>LongTermMemory</td><td>记录稳定工作组、常见短板、不适部位、训练偏好、上次复盘更新。</td><td>不做医疗病史推断。</td><td>用户可修改，Agent 需记录修改来源。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="roadmap">
+        <div class="section-head">
+          <div class="num">12</div>
+          <div>
+            <h2>路线图与阶段定义。</h2>
+            <p class="section-lead">资源投入顺序建议从“Agent 闭环先行，硬件验证并行”开始。先证明用户愿意让 Vela 参与下一组训练决策，再验证智能硬件是否能提升判断精度和反馈可信度。</p>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr><th>阶段</th><th>目标</th><th>交付物</th><th>成功标准</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>阶段一：Web App + Agent 本体</td><td>跑通训练日闭环和主动训练决策。</td><td>首页、训练前协商、今日计划、动作页、组后反馈、组间调参、复盘页、Memory、Agent 规则表、Mock 数据。</td><td>用户理解 Vela 是 AI健身Agent，并愿意每组后做轻量反馈；系统能给出可信的下一组建议。</td></tr>
+            <tr><td>V1：Vela Sensor Wrap</td><td>提供训练现场质量数据。</td><td>压力阵列、IMU、BLE、固定结构、模拟数据接口、首批动作验证场景。</td><td>能辅助判断不稳定、速度下降、左右压力波动，并提升组间调参可信度。</td></tr>
+            <tr><td>V2：Vela Band</td><td>提供全天候身体状态入口。</td><td>心率、HRV、睡眠、休息提醒、震动反馈、小屏确认、第三方健康数据联动。</td><td>增强训练前状态判断、组间节奏提醒和日常恢复托底，但不替代 Agent 主线。</td></tr>
+          </tbody>
+        </table>
+
+        <div class="grid-3 mt-lg">
+          <div class="card"><h3>阶段决策 1</h3><p>阶段一是否明确以 Web App + Agent 本体为核心，而不是以硬件单品作为第一入口？</p></div>
+          <div class="card"><h3>阶段决策 2</h3><p>V1 是否将 Sensor Wrap 定义为训练现场数据入口，而不是独立智能健身硬件品类？</p></div>
+          <div class="card"><h3>阶段决策 3</h3><p>第一版算法边界是否明确为：不做精准测重、绝对功率、完整动作纠错和医疗诊断？</p></div>
+        </div>
+      </section>
+
+      <section id="sources">
+        <div class="section-head">
+          <div class="num">13</div>
+          <div>
+            <h2>本地资料与占位图路径。</h2>
+            <p class="section-lead">本页依据以下本地文档整理。页面中的图像为色块/结构占位，后续可按路径替换为真实渲染图、产品原型图或传感器结构图。</p>
+          </div>
+        </div>
+
+        <div class="source-list">
+          <a class="source" href="file:///D:/Shokz/Vela/Research_Final.md"><b>Research_Final.md</b>D:\Shokz\Vela\Research_Final.md</a>
+          <a class="source" href="file:///D:/Shokz/Vela/Vela_Product_Definition_v0.3.md"><b>Product Definition V0.3</b>D:\Shokz\Vela\Vela_Product_Definition_v0.3.md</a>
+          <a class="source" href="file:///D:/Shokz/Vela/Vela_Hardware_Wrap_Context_Pack.md"><b>Hardware Wrap Context</b>D:\Shokz\Vela\Vela_Hardware_Wrap_Context_Pack.md</a>
+          <a class="source" href="file:///D:/Shokz/Vela/Shokz_style.html"><b>Shokz Style</b>D:\Shokz\Vela\Shokz_style.html</a>
+        </div>
+      </section>
+
+      <footer class="footer">
+        Vela Product Brief · 产品定义草案。建议下一步输出：Web App PRD V0.1、Agent 规则表、Wrap 模拟数据 JSON、首轮硬件验证计划和产品定义版本记录。
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

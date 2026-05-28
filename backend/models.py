@@ -6,7 +6,7 @@ from typing import Optional, List, Literal
 
 Strategy = Literal["稳", "冲", "保"]
 PerceivedState = Literal["过轻", "轻松", "正常", "粘滞", "失败"]
-FailureType = Literal["推不上去/没完成次数", "被压/需要保护", "疼痛/不适", "动作变形/主动放弃"]
+FailureType = Literal["被压/需要保护", "疼痛/不适", "动作变形/主动放弃"]
 ExerciseRole = Literal["main", "secondary", "isolation", "finisher", "technique"]
 ExerciseStatus = Literal["pending", "active", "completed", "skipped", "replaced"]
 

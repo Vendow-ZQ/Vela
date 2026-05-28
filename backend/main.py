@@ -136,8 +136,46 @@ def fallback_adjust_set(set_record: dict, memory: dict) -> tuple[Optional[dict],
     """Rule-based set adjustment fallback."""
     state = set_record.get("perceived_state", "正常")
     short_memory = memory.get("short_term", memory)
-    base_weight = set_record.get("actual_weight_kg", set_record["planned_weight_kg"])
-    base_reps = set_record.get("actual_reps", set_record["planned_reps"])
+    planned_weight = set_record["planned_weight_kg"]
+    planned_reps = set_record["planned_reps"]
+    actual_weight = set_record.get("actual_weight_kg", planned_weight)
+    actual_reps = set_record.get("actual_reps", planned_reps)
+    base_weight = actual_weight
+    base_reps = actual_reps
+
+    if actual_reps < planned_reps:
+        shortfall = planned_reps - actual_reps
+        if shortfall >= 3:
+            next_weight = round(planned_weight * 0.95, 1)
+            next_reps = planned_reps
+            reason = "实际次数明显低于计划，说明当前负荷不可持续；下一组小幅降重，回到计划次数"
+            message = "这组实际完成次数低于计划比较多，我不会直接沿用失败组数据。下一组降到 {}kg，目标回到 {} 次，多休息一下。".format(
+                next_weight, next_reps
+            )
+        else:
+            next_weight = planned_weight
+            next_reps = max(actual_reps + 1, planned_reps - 1)
+            reason = "实际次数低于计划，视为训练失败信号；保留计划重量，降低目标次数并延长休息"
+            message = "这组没有达到计划次数，我把它视为一次失败信号。下一组先保留 {}kg，目标 {} 次，休息拉长一点。".format(
+                next_weight, next_reps
+            )
+        return {
+            "type": "missed_reps_adjust",
+            "new_weight_kg": next_weight,
+            "new_reps": next_reps,
+            "new_rest_sec": set_record.get("planned_rest_sec", 150) + 60,
+            "reason": reason,
+        }, message
+
+    if actual_weight > planned_weight or actual_reps > planned_reps:
+        return {
+            "type": "confirm_user_baseline",
+            "new_weight_kg": actual_weight,
+            "new_reps": actual_reps,
+            "reason": "用户主动提高实际完成标准且完成，说明原计划偏轻，下一组采用新的实际完成基线"
+        }, "你刚才已经把实际完成提高到 {}kg × {}，说明原计划偏轻。下一组先按这个新基线走，我会继续观察。".format(
+            actual_weight, actual_reps
+        )
 
     if state == "正常":
         return None, "按计划继续。"
@@ -192,7 +230,6 @@ def fallback_adjust_set(set_record: dict, memory: dict) -> tuple[Optional[dict],
 def fallback_failure_handler(failure_type: str, set_record: dict) -> tuple[dict, str, str, bool]:
     """Rule-based failure handling fallback."""
     risk_levels = {
-        "推不上去/没完成次数": ("low", False),
         "被压/需要保护": ("high", True),
         "疼痛/不适": ("safety", True),
         "动作变形/主动放弃": ("medium-high", False),
@@ -200,20 +237,12 @@ def fallback_failure_handler(failure_type: str, set_record: dict) -> tuple[dict,
     risk_level, should_end = risk_levels.get(failure_type, ("low", False))
 
     messages = {
-        "推不上去/没完成次数": "没关系，这次没完成。下一组降低目标次数，延长休息。",
         "被压/需要保护": "安全最重要。下一组降重 5-10%，建议找保护。",
         "疼痛/不适": "有疼痛就不要硬撑了。建议停止当前动作，观察一下。",
         "动作变形/主动放弃": "动作变形说明负荷可能太大了。下一组降重，优先保证动作质量。",
     }
 
-    if failure_type == "推不上去/没完成次数":
-        adjustment = {
-            "type": "reduce_reps",
-            "new_weight_kg": set_record.get("actual_weight_kg", set_record["planned_weight_kg"]),
-            "new_reps": max(set_record.get("actual_reps", set_record["planned_reps"]) - 2, 3),
-            "new_rest_sec": set_record.get("planned_rest_sec", 150) + 30,
-        }
-    elif failure_type == "被压/需要保护":
+    if failure_type == "被压/需要保护":
         adjustment = {
             "type": "reduce_weight",
             "new_weight_kg": round(set_record.get("actual_weight_kg", set_record["planned_weight_kg"]) * 0.9, 1),

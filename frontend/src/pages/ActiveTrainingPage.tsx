@@ -13,10 +13,11 @@ function applyActualAsNextSetBaseline(
   plannedSets: TrainingPlan['exercises'][number]['plannedSets'],
   currentSetIndex: number,
   actualWeightKg: number,
-  actualReps: number
+  actualReps: number,
+  shouldApply: boolean
 ) {
   const nextSetIndex = currentSetIndex + 1;
-  if (nextSetIndex >= plannedSets.length) {
+  if (!shouldApply || nextSetIndex >= plannedSets.length) {
     return plannedSets;
   }
 
@@ -27,6 +28,30 @@ function applyActualAsNextSetBaseline(
     plannedReps: actualReps,
   };
   return updatedSets;
+}
+
+function inferPerceivedStateFromActuals(
+  currentSet: TrainingPlan['exercises'][number]['plannedSets'][number],
+  actualWeightKg: number,
+  actualReps: number,
+  selectedState: PerceivedState
+): PerceivedState {
+  if (actualReps < currentSet.plannedReps) {
+    return '失败';
+  }
+
+  if (actualWeightKg > currentSet.plannedWeightKg || actualReps > currentSet.plannedReps) {
+    return selectedState === '过轻' ? '过轻' : '轻松';
+  }
+
+  return selectedState;
+}
+
+function buildAutoInferenceNote(selectedState: PerceivedState, effectiveState: PerceivedState) {
+  if (selectedState === effectiveState) {
+    return undefined;
+  }
+  return `用户选择体感「${selectedState}」，系统根据实际完成数据推断为「${effectiveState}」。`;
 }
 
 export default function ActiveTrainingPage() {
@@ -204,6 +229,14 @@ export default function ActiveTrainingPage() {
   const handleFinishSet = async () => {
     if (!exercise || !currentSet || !activePlan) return;
 
+    const effectivePerceivedState = inferPerceivedStateFromActuals(
+      currentSet,
+      actualWeight,
+      actualReps,
+      perceivedState
+    );
+    const shouldUseActualAsBaseline = effectivePerceivedState !== '失败';
+
     const setRecord: SetRecord = {
       setIndex: currentSet.setIndex,
       exerciseId: exercise.exerciseId,
@@ -212,7 +245,8 @@ export default function ActiveTrainingPage() {
       plannedRestSec: currentSet.plannedRestSec,
       actualWeightKg: actualWeight,
       actualReps: actualReps,
-      perceivedState,
+      perceivedState: effectivePerceivedState,
+      freeTextNote: buildAutoInferenceNote(perceivedState, effectivePerceivedState),
       restStartedAt: new Date().toISOString(),
       acceptedAgentAdjustment: true,
     };
@@ -232,14 +266,15 @@ export default function ActiveTrainingPage() {
         exercise.plannedSets,
         memory.shortTerm.currentSetIndex,
         actualWeight,
-        actualReps
+        actualReps,
+        shouldUseActualAsBaseline
       );
       const updatedExercises = [...activePlan.exercises];
       updatedExercises[currentExerciseIndex] = {
         ...exercise,
         plannedSets,
         completedSets: newCompletedSets,
-        status: newCompletedSets.length >= exercise.plannedSets.length ? 'completed' : 'active',
+        status: newCompletedSets.length >= plannedSets.length ? 'completed' : 'active',
       };
 
       const updatedPlan = { ...activePlan, exercises: updatedExercises };
@@ -250,13 +285,15 @@ export default function ActiveTrainingPage() {
         setPendingAdjustment(res.adjustment);
         setShowAdjustmentModal(true);
         updateShortTermMemory({
-          consecutiveEasySets: perceivedState === '轻松' ? memory.shortTerm.consecutiveEasySets + 1 : 0,
-          consecutiveStickySets: perceivedState === '粘滞' ? memory.shortTerm.consecutiveStickySets + 1 : 0,
+          consecutiveEasySets: effectivePerceivedState === '轻松' ? memory.shortTerm.consecutiveEasySets + 1 : 0,
+          consecutiveStickySets: effectivePerceivedState === '粘滞' ? memory.shortTerm.consecutiveStickySets + 1 : 0,
+          hasFailureInCurrentExercise: effectivePerceivedState === '失败' || memory.shortTerm.hasFailureInCurrentExercise,
         });
       } else {
         updateShortTermMemory({
-          consecutiveEasySets: perceivedState === '轻松' ? memory.shortTerm.consecutiveEasySets + 1 : 0,
-          consecutiveStickySets: perceivedState === '粘滞' ? memory.shortTerm.consecutiveStickySets + 1 : 0,
+          consecutiveEasySets: effectivePerceivedState === '轻松' ? memory.shortTerm.consecutiveEasySets + 1 : 0,
+          consecutiveStickySets: effectivePerceivedState === '粘滞' ? memory.shortTerm.consecutiveStickySets + 1 : 0,
+          hasFailureInCurrentExercise: effectivePerceivedState === '失败' || memory.shortTerm.hasFailureInCurrentExercise,
         });
         startRestTimer(currentSet.plannedRestSec);
       }
@@ -446,14 +483,15 @@ export default function ActiveTrainingPage() {
         exercise.plannedSets,
         memory.shortTerm.currentSetIndex,
         actualWeight,
-        actualReps
+        actualReps,
+        false
       );
       const updatedExercises = [...activePlan.exercises];
       updatedExercises[currentExerciseIndex] = {
         ...exercise,
         plannedSets,
         completedSets: newCompletedSets,
-        status: newCompletedSets.length >= exercise.plannedSets.length ? 'completed' : 'active',
+        status: newCompletedSets.length >= plannedSets.length ? 'completed' : 'active',
       };
 
       const updatedPlan = { ...activePlan, exercises: updatedExercises };
@@ -805,9 +843,9 @@ export default function ActiveTrainingPage() {
       {showFailureModal && (
         <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center p-5">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
-            <h3 className="text-lg font-bold text-shokz-black-900 mb-4">这组失败属于哪种情况？</h3>
+            <h3 className="text-lg font-bold text-shokz-black-900 mb-4">这组有没有安全情况？</h3>
             <div className="space-y-2 mb-4">
-              {['推不上去/没完成次数', '被压/需要保护', '疼痛/不适', '动作变形/主动放弃'].map((type) => (
+              {['被压/需要保护', '疼痛/不适', '动作变形/主动放弃'].map((type) => (
                 <button
                   key={type}
                   onClick={() => setFailureType(type)}

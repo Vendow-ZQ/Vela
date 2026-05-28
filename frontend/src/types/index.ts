@@ -1,7 +1,7 @@
 export type Strategy = '稳' | '冲' | '保';
 export type TrainingFocus = 'push' | 'pull' | 'legs';
 export type PerceivedState = '过轻' | '轻松' | '正常' | '粘滞' | '失败';
-export type FailureType = '推不上去/没完成次数' | '被压/需要保护' | '疼痛/不适' | '动作变形/主动放弃';
+export type FailureType = '被压/需要保护' | '疼痛/不适' | '动作变形/主动放弃';
 export type ExerciseRole = 'main' | 'secondary' | 'isolation' | 'finisher' | 'technique';
 export type ExerciseStatus = 'pending' | 'active' | 'completed' | 'skipped' | 'replaced';
 export type Page = 'home' | 'personalData' | 'calendar' | 'negotiation' | 'todayPlan' | 'activeTraining' | 'trainingReview' | 'sessionDetail';
